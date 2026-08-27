@@ -5,6 +5,7 @@ import { sendEmail } from "../services/email.service.js";
 import { generateOtp,getOtpHtml } from "../utils/utils.js";
 import otpModel from "../models/otp.model.js";
 import crypto from "crypto";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 export async function register(req, res) {
@@ -19,7 +20,7 @@ export async function register(req, res) {
     });
   }
 
-  const hashedPassword = crypto.createHash("sha256").update(password).digest("hex");
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   const user = await userModel.create({
     username,
@@ -64,8 +65,7 @@ export async function login(req,res){
       })
     }
 
-    const hashedPassword = crypto.createHash("sha256").update(password).digest("hex")
-    const isPasswordValid =  hashedPassword === user.password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if(!isPasswordValid){
         return res.status(401).json({
@@ -270,6 +270,16 @@ export async function verifyEmail(req,res){
   if(!otpDoc){
     return res.status(400).json({
       message:"Invalid OTP"
+    })
+  }
+
+    const OTP_EXPIRY_MS = 10 * 60 * 1000; 
+  const elapsed = Date.now() - otpDoc.createdAt.getTime();
+
+  if(elapsed > OTP_EXPIRY_MS){
+    await otpModel.deleteOne({ _id: otpDoc._id });
+    return res.status(400).json({
+      message:"OTP expired, please request a new one"
     })
   }
 
