@@ -13,45 +13,45 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-// const FEATURES = [
-//   {
-//     icon: MailCheck,
-//     title: "Email verification",
-//     desc: "New accounts confirm ownership with a time-limited OTP sent straight to their inbox.",
-//   },
-//   {
-//     icon: KeyRound,
-//     title: "Short-lived access tokens",
-//     desc: "15-minute JWT access tokens paired with a 7-day refresh token, rotated automatically.",
-//   },
-//   {
-//     icon: Smartphone,
-//     title: "Session tracking per device",
-//     desc: "Every login is recorded with IP and device info, so you always know what's signed in.",
-//   },
-//   {
-//     icon: LogOut,
-//     title: "Remote logout, anywhere",
-//     desc: "End one session or every session at once, without touching the device itself.",
-//   },
-//   {
-//     icon: ShieldCheck,
-//     title: "Bcrypt-hashed passwords",
-//     desc: "Passwords are salted and hashed before they ever touch the database.",
-//   },
-//   {
-//     icon: Lock,
-//     title: "HttpOnly refresh cookies",
-//     desc: "Refresh tokens never reach client-side JavaScript, closing off a common attack path.",
-//   },
-// ];
+const FEATURES = [
+  {
+    icon: MailCheck,
+    title: "Email verification",
+    desc: "New accounts confirm ownership with a time-limited OTP sent straight to their inbox.",
+  },
+  {
+    icon: KeyRound,
+    title: "Short-lived access tokens",
+    desc: "15-minute JWT access tokens paired with a 7-day refresh token, rotated automatically.",
+  },
+  {
+    icon: Smartphone,
+    title: "Session tracking per device",
+    desc: "Every login is recorded with IP and device info, so you always know what's signed in.",
+  },
+  {
+    icon: LogOut,
+    title: "Remote logout, anywhere",
+    desc: "End one session or every session at once, without touching the device itself.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Bcrypt-hashed passwords",
+    desc: "Passwords are salted and hashed before they ever touch the database.",
+  },
+  {
+    icon: Lock,
+    title: "HttpOnly refresh cookies",
+    desc: "Refresh tokens never reach client-side JavaScript, closing off a common attack path.",
+  },
+];
 
-// const STEPS = [
-//   { n: "01", title: "Sign up", desc: "Create an account with an email and password." },
-//   { n: "02", title: "Verify", desc: "Confirm your email with a 6-digit code we send you." },
-//   { n: "03", title: "Log in", desc: "Get a short-lived access token and a secure session." },
-//   { n: "04", title: "Stay in control", desc: "Review active sessions, sign out anywhere, anytime." },
-// ];      for later use
+const STEPS = [
+  { n: "01", title: "Sign up", desc: "Create an account with an email and password." },
+  { n: "02", title: "Verify", desc: "Confirm your email with a 6-digit code we send you." },
+  { n: "03", title: "Log in", desc: "Get a short-lived access token and a secure session." },
+  { n: "04", title: "Stay in control", desc: "Review active sessions, sign out anywhere, anytime." },
+];      
 
 
 
@@ -217,7 +217,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How it works */}
       <section id="how-it-works" className="max-w-6xl mx-auto px-6 py-24">
         <h2 className="text-2xl font-semibold text-gray-900 mb-2">How it works</h2>
         <p className="text-gray-500 mb-12 max-w-lg">
@@ -235,23 +234,45 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-100 py-10">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <Lock className="w-4 h-4 text-blue-400" />
-            DevVault — a MERN authentication starter
-          </div>
-          <Link
-            to="https://github.com/chetanravish/Mern-Authentication-System"
-            target="_blank"
-            rel="noreferrer"
-            className="text-sm text-gray-500 hover:text-gray-900 flex items-center gap-1"
-          >
-            <GitBranch className="w-4 h-4" /> View source
-          </Link>
-        </div>
-      </footer>
+    <footer className="w-full border-t border-gray-200 bg-white py-6 dark:border-gray-800 dark:bg-slate-950">
+  <div className="mx-auto flex max-w-7xl flex-col items-center gap-2 px-4">
+
+    {/* Logo */}
+    <div className="flex items-center gap-2">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5 text-blue-600"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M12 3l7 4v5c0 5-3.5 8-7 9-3.5-1-7-4-7-9V7l7-4z"
+        />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M9.5 12l1.5 1.5L14.5 10"
+        />
+      </svg>
+
+      <h3 className="text-lg font-semibold text-blue-600">DevVault</h3>
+    </div>
+
+    {/* Tagline */}
+    <p className="text-center text-sm text-gray-500 dark:text-gray-400">
+      Secure authentication built with MERN • JWT • Cookies
+    </p>
+
+    {/* Copyright */}
+    <p className="text-xs text-gray-400 dark:text-gray-500">
+      © 2026 DevVault. Built by Chetan Ravish.
+    </p>
+  </div>
+</footer>
     </div>
   );
 }

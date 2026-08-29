@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link,useLocation } from "react-router-dom";
+import { verifyUser } from "../api/devvault.api";
 import { Lock, Mail, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
-
+  const location = useLocation();
+const navigate = useNavigate();
 const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-const [email] = useState("chetan74@gmail.com"); // replace with navigate state later
+const email = location.state?.email || "";
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -27,14 +30,32 @@ function handleKeyDown(e, index) {
   }
 }
 
-  function handleSubmit(e) {
+const handleSubmit = async (e) => {
   e.preventDefault();
 
   const code = otp.join("");
-  console.log(code);
 
-  // verify OTP API here
-}
+  if (code.length !== 6) {
+    return setError("Please enter all 6 digits");
+  }
+
+  setLoading(true);
+  setError("");
+
+  try {
+    const data = await verifyUser(code,email);
+
+    console.log(data);
+
+    navigate("/")
+  } catch (error) {
+    setError(
+      error.response?.data?.message || "Invalid OTP"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen w-full bg-[#0B0F19] text-gray-100 flex items-center justify-center px-4">

@@ -1,8 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { registerUser } from "../api/devvault.api";
 import { Lock, Mail, User, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function Register() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [error, setError] = useState("");
@@ -11,18 +14,27 @@ export default function Register() {
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
+  const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true); 
+        setError("");
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+        try {
+            const data = await registerUser(form.username, form.email, form.password);
+            setLoading(false);
+            navigate("/verify-email",{
+              state:{
+                email: form.email,
+              },
+            })
 
-    // TODO: replace with your axios call
-    // const { data } = await api.post("/api/auth/register", form)
-    // on success -> navigate("/verify-email", { state: { email: form.email } })
-
-    setTimeout(() => setLoading(false), 800); // placeholder
-  }
+        } catch (error) {
+            setLoading(false);
+            setError(
+                error.response?.data?.message || "Registration Failed! Please try again"
+            );
+        }
+    };
 
   return (
     <div className="min-h-screen w-full bg-[#0B0F19] text-gray-100 flex items-center justify-center px-4">

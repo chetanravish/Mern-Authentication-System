@@ -7,6 +7,7 @@ import otpModel from "../models/otp.model.js";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { enableCompileCache } from "module";
 
 export async function register(req, res) {
   const { username, email, password } = req.body;
