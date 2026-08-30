@@ -56,7 +56,7 @@ export async function login(req,res){
 
     if(!user){
         return res.status(401).json({
-            message:"invalid email or password"
+            message:"invalid email or password "
         })
     }
 
@@ -67,7 +67,7 @@ export async function login(req,res){
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
-
+    
     if(!isPasswordValid){
         return res.status(401).json({
             message:"invalid email or password "
@@ -150,7 +150,7 @@ export async function refreshToken(req, res) {
 
   const refreshTokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex")
 
-  const session = sessionModel.findOne({
+  const session = await sessionModel.findOne({
     refreshTokenHash,
     revoked:false
   })
@@ -182,7 +182,7 @@ export async function refreshToken(req, res) {
   )
 
   
-    const newRefreshTokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex")
+    const newRefreshTokenHash = crypto.createHash("sha256").update(newrefreshToken).digest("hex")
     session.refreshTokenHash=newRefreshTokenHash
     await session.save()
 
