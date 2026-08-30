@@ -1,27 +1,44 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { loginUser } from "../api/devvault.api";
+import { useContext } from "react";
+import { AuthContext } from "../context/auth_context.js";
+import { useNavigate } from "react-router-dom";
 import { Lock, Mail, User, Eye, EyeOff, ArrowRight } from "lucide-react";
 
 export default function Register() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const { setAccessToken } = useContext(AuthContext);
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  function handleSubmit(e) {
+  const handleSubmit = async (e)=> {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    // TODO: replace with your axios call
-    // const { data } = await api.post("/api/auth/register", form)
-    // on success -> navigate("/verify-email", { state: { email: form.email } })
+    try {
+               const data = await loginUser(form.email, form.password);
+               setAccessToken(data.accessToken);
+               navigate("/dashboard",{
+                 state:{
+                   email: form.email,
+                 },
+               })
+   
+           } catch (error) {
+               setError(
+                   error.response?.data?.message || "Login Failed! Please try again"
+               );
+           } finally{
+            setLoading(false);
+           }
 
-    setTimeout(() => setLoading(false), 800); // placeholder
   }
 
   return (

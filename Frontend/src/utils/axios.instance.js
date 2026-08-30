@@ -1,15 +1,22 @@
-// Instance for axios so we don't have to write the base url every time we make a request
 import axios from "axios";
+import { getAccessToken } from "../context/TokenStore";
 const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
     timeout: 10000,
     withCredentials:true
 })
 
+
 axiosInstance.interceptors.request.use(
-    (response) => {
-        return response;
-    },
+   (config) => {
+  const token = getAccessToken();
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+},
     (error) => {
 
         if (error.response) {

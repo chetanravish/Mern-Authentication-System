@@ -47,7 +47,7 @@ const handleSubmit = async (e) => {
 
     console.log(data);
 
-    navigate("/")
+    navigate("/me")
   } catch (error) {
     setError(
       error.response?.data?.message || "Invalid OTP"
