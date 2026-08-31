@@ -5,6 +5,9 @@ import { useSearchParams } from "react-router-dom";
 import Login from "../components/Authpages/LoginPage";
 import Register from "../components/Authpages/RegisterPage";
 import VerifyEmail from "../components/Authpages/VerifyEmail";
+import ForgotPassword from "../components/Authpages/ForgotPass";
+import VerifyResetOtp from "../components/Authpages/VerifyResetOtp";
+import ResetPassword from "../components/Authpages/ResetPassword";
 
 const DOC_STACK = [
   { label: "Aadhar Card", tint: "bg-blue-500/10 border-blue-500/20", rotate: "-rotate-6", offset: "translate-x-0 translate-y-6" },
@@ -69,6 +72,9 @@ function DocumentStack() {
 
 export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [resetEmail,setResetEmail] = useState(
+    sessionStorage.getItem("resetEmail") || ""
+  )
   const [email, setEmail] = useState(
   sessionStorage.getItem("verifyEmail") || ""
 );
@@ -76,6 +82,7 @@ export default function Home() {
   const screen = searchParams.get("auth") || "home";
 
   const setScreen = (value) => {
+    console.log("Screen:", value);
     if (value === "home") {
       setSearchParams({});
     } else {
@@ -83,13 +90,48 @@ export default function Home() {
     }
   };
 
+
   if (screen === "login") {
     return (
       <Login
         onRegister={() => setScreen("register")}
+        onForgotPassword={() => setScreen("forgot-password")}
       />
     );
   }
+
+  if (screen === "forgot-password"){
+    return(
+      <ForgotPassword
+      onBack={()=>setScreen("login")}
+      onVerify={(email) => {
+        setResetEmail(email);
+        sessionStorage.setItem("resetEmail", email);
+        console.log("I am here")
+        setScreen("verify-reset");
+      }}
+      />
+    )
+  }
+
+  if(screen === "verify-reset"){
+    return(
+      <VerifyResetOtp
+      email={resetEmail}
+      onBack={() => setScreen("forgot-password")}
+      onNext={() => setScreen("reset-password")}
+      />
+    )
+  }
+
+  if (screen === "reset-password") {
+  return (
+    <ResetPassword
+      onDone={() => setScreen("login")}
+    />
+  );
+}
+
 
   if (screen === "register") {
     return (

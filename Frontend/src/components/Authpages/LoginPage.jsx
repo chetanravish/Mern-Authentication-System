@@ -6,7 +6,7 @@ import { AuthContext } from "../../context/auth_context.js";
 import { useNavigate } from "react-router-dom";
 import { Lock, Mail, User, Eye, EyeOff, ArrowRight } from "lucide-react";
 
-export default function Login({ onRegister }) {
+export default function Login({ onRegister, onForgotPassword }={}) {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ username: "", email: "", password: "" });
@@ -117,6 +117,16 @@ export default function Login({ onRegister }) {
                   )}
                 </button>
               </div>
+            </div>
+
+            <div className="flex justify-end -mt-1">
+              <button
+                type="button"
+                onClick={onForgotPassword}
+                className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
+              >
+                Forgot password?
+              </button>
             </div>
 
             <button

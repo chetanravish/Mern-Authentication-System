@@ -35,3 +35,28 @@ export const resendOtp = async (email)=>{
   )
   return data;
 }
+
+export const forgotPassword = async(email)=>{
+  const {data} = await axiosInstance.post("/api/auth/forgot-password",
+    {email}
+  )
+  return data;
+}
+
+export const verifyResetOtp = async(otp,email)=>{
+  const {data} = await axiosInstance.post("/api/auth/verify-reset-otp",
+    {otp,email}
+  )
+  return data;
+}
+
+export const resetPassword = async(newPassword,token)=>{
+  const {data} = await axiosInstance.post("/api/auth/reset-password",
+    {newPassword},{
+      headers:{
+        Authorization:`Bearer ${token}`,
+      },
+    }
+  )
+  return data;
+}
