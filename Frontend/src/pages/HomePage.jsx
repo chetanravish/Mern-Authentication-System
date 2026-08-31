@@ -69,7 +69,9 @@ function DocumentStack() {
 
 export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(
+  sessionStorage.getItem("verifyEmail") || ""
+);
 
   const screen = searchParams.get("auth") || "home";
 

@@ -7,7 +7,6 @@ import otpModel from "../models/otp.model.js";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { enableCompileCache } from "module";
 
 export async function register(req, res) {
   const { username, email, password } = req.body;
@@ -302,4 +301,44 @@ export async function verifyEmail(req,res){
     }
   })
 
+}
+
+export async function resendOtp(req,res) {
+  const {email}=req.body;
+  const user = await userModel.findOne({email});
+
+  if(!user){
+    return res.status(404).json({
+      message:"User not found bro",
+    });
+  }
+
+  if(user.verified){
+    return res.status(400).json({
+      message:"Email already verified",
+    });
+  }
+
+  await otpModel.deleteMany({email});
+  const otp = generateOtp();
+  const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
+
+  await otpModel.create({
+    email,
+    user: user._id,
+    otpHash,
+  });
+
+  const html = getOtpHtml(otp, email, user.username);
+
+  await sendEmail(
+    email,
+    "New OTP Verification",
+    `Your OTP is ${otp}`,
+    html
+  );
+  res.status(200).json({
+    message: "OTP sent successfully",
+  });
+  
 }

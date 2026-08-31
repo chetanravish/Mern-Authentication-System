@@ -1,11 +1,9 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { registerUser } from "../../api/devvault.api.js";
 import { Lock, Mail, User, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function Register({ onLogin, onVerify }) {
-  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [error, setError] = useState("");
@@ -22,6 +20,7 @@ export default function Register({ onLogin, onVerify }) {
     try {
       const data = await registerUser(form.username, form.email, form.password);
       setLoading(false);
+      sessionStorage.setItem("verifyEmail", form.email);
       onVerify(form.email);
 
     } catch (error) {

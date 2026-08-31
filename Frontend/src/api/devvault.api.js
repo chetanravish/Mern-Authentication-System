@@ -28,3 +28,10 @@ export const getCurrentUser = async () => {
 export const logOut = async ()=>{
     await axiosInstance.get("/api/auth/logout")
 }
+
+export const resendOtp = async (email)=>{
+  const {data} = await axiosInstance.post("/api/auth/resend-otp",
+   {email} 
+  )
+  return data;
+}
