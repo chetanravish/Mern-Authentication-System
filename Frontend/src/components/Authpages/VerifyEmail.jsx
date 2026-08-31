@@ -1,16 +1,13 @@
 import { useState } from "react";
-import { Link,useLocation } from "react-router-dom";
-import { verifyUser } from "../api/devvault.api";
-import { Lock, Mail, ArrowRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { verifyUser } from "../../api/devvault.api";
+import { Lock, Mail, ArrowRight,CheckCircle} from "lucide-react";
 
-export default function Register() {
-  const location = useLocation();
-const navigate = useNavigate();
+export default function verifyEmail({ email, onDone }) {
 const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-const email = location.state?.email || "";
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   function handleOtpChange(value, index) {
   if (!/^\d?$/.test(value)) return;
@@ -34,28 +31,49 @@ const handleSubmit = async (e) => {
   e.preventDefault();
 
   const code = otp.join("");
-
+console.log(code)
+console.log(typeof code)
   if (code.length !== 6) {
     return setError("Please enter all 6 digits");
-  }
+  } 
 
   setLoading(true);
   setError("");
 
   try {
-    const data = await verifyUser(code,email);
-
-    console.log(data);
-
-    navigate("/me")
+   await verifyUser(code,email);
+   setSuccess(true);
+   setTimeout(()=>{
+   onDone();
+   },2500);   
   } catch (error) {
     setError(
-      error.response?.data?.message || "Invalid OTP"
+      error.response?.data?.message || "Invalid OTP hi"
     );
   } finally {
     setLoading(false);
   }
 };
+       if (success) {
+  return (
+    <div className="min-h-screen bg-[#0B0F19] flex items-center justify-center px-4">
+      <div className="bg-[#131826] border border-white/5 rounded-2xl p-8 max-w-sm w-full text-center">
+        <div className="w-16 h-16 mx-auto rounded-full bg-green-500/10 flex items-center justify-center">
+          <CheckCircle className="w-10 h-10 text-green-400" />
+        </div>
+
+        <h2 className="mt-5 text-2xl font-semibold text-white">
+          Account Created!
+        </h2>
+
+        <p className="mt-2 text-sm text-gray-400">
+          Your email has been verified successfully.
+          Redirecting to login...
+        </p>
+      </div>
+    </div>
+  );
+}
 
   return (
     <div className="min-h-screen w-full bg-[#0B0F19] text-gray-100 flex items-center justify-center px-4">

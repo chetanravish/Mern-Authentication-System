@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerUser } from "../api/devvault.api";
+import { registerUser } from "../../api/devvault.api.js";
 import { Lock, Mail, User, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
-export default function Register() {
+export default function Register({ onLogin, onVerify }) {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ username: "", email: "", password: "" });
@@ -15,26 +15,22 @@ export default function Register() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
   const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true); 
-        setError("");
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
-        try {
-            const data = await registerUser(form.username, form.email, form.password);
-            setLoading(false);
-            navigate("/verify-email",{
-              state:{
-                email: form.email,
-              },
-            })
+    try {
+      const data = await registerUser(form.username, form.email, form.password);
+      setLoading(false);
+      onVerify(form.email);
 
-        } catch (error) {
-            setLoading(false);
-            setError(
-                error.response?.data?.message || "Registration Failed! Please try again"
-            );
-        }
-    };
+    } catch (error) {
+      setLoading(false);
+      setError(
+        error.response?.data?.message || "Registration Failed! Please try again"
+      );
+    }
+  };
 
   return (
     <div className="min-h-screen w-full bg-[#0B0F19] text-gray-100 flex items-center justify-center px-4">
@@ -146,9 +142,13 @@ export default function Register() {
 
           <p className="text-center text-sm text-gray-400 mt-6">
             Already have an account?{" "}
-            <Link to={"/login"}  className="text-blue-400 font-medium hover:text-blue-300">
+            <button
+              type="button"
+              onClick={onLogin}
+              className="text-blue-400 font-medium hover:text-blue-300"
+            >
               Log in
-            </Link>
+            </button>
           </p>
         </div>
       </div>

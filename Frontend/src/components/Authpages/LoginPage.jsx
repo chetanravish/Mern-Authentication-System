@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { loginUser } from "../api/devvault.api";
+import { loginUser } from "../../api/devvault.api.js";
 import { useContext } from "react";
-import { AuthContext } from "../context/auth_context.js";
+import { AuthContext } from "../../context/auth_context.js";
 import { useNavigate } from "react-router-dom";
 import { Lock, Mail, User, Eye, EyeOff, ArrowRight } from "lucide-react";
 
-export default function Register() {
+export default function Login({ onRegister }) {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ username: "", email: "", password: "" });
@@ -17,27 +17,27 @@ export default function Register() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  const handleSubmit = async (e)=> {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-               const data = await loginUser(form.email, form.password);
-               setAccessToken(data.accessToken);
-               navigate("/dashboard",{
-                 state:{
-                   email: form.email,
-                 },
-               })
-   
-           } catch (error) {
-               setError(
-                   error.response?.data?.message || "Login Failed! Please try again"
-               );
-           } finally{
-            setLoading(false);
-           }
+      const data = await loginUser(form.email, form.password);
+      setAccessToken(data.accessToken);
+      navigate("/dashboard", {
+        state: {
+          email: form.email,
+        },
+      })
+
+    } catch (error) {
+      setError(
+        error.response?.data?.message || "Login Failed! Please try again"
+      );
+    } finally {
+      setLoading(false);
+    }
 
   }
 
@@ -65,7 +65,7 @@ export default function Register() {
           )}
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-            
+
 
             <div>
               <label className="text-xs font-medium text-gray-400 mb-1 block">
@@ -133,9 +133,13 @@ export default function Register() {
 
           <p className="text-center text-sm text-gray-400 mt-6">
             {/* Already have an account?{" "} */}
-            <Link to="/register" className="text-blue-400 font-medium hover:text-blue-300">
+            <button
+              type="button"
+              onClick={onRegister}
+              className="text-blue-400 font-medium hover:text-blue-300"
+            >
               Create new account
-            </Link>
+            </button>
           </p>
         </div>
       </div>

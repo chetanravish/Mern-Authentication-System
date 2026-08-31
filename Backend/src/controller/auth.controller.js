@@ -261,6 +261,7 @@ res.status(200).json({
 
 export async function verifyEmail(req,res){
   const {otp,email} = req.body
+
   const otpHash = crypto.createHash("sha256").update(otp).digest("hex")
 
   const otpDoc = await otpModel.findOne({

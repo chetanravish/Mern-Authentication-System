@@ -1,278 +1,216 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  Lock,
-  ShieldCheck,
-  Smartphone,
-  KeyRound,
-  MailCheck,
-  LogOut,
-  Menu,
-  GitBranch,
-  X,
-  ArrowRight,
-} from "lucide-react";
+import { Lock, Search, Users, ShieldCheck, ArrowRight } from "lucide-react";
+import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import Login from "../components/Authpages/LoginPage";
+import Register from "../components/Authpages/RegisterPage";
+import VerifyEmail from "../components/Authpages/VerifyEmail";
+
+const DOC_STACK = [
+  { label: "Aadhar Card", tint: "bg-blue-500/10 border-blue-500/20", rotate: "-rotate-6", offset: "translate-x-0 translate-y-6" },
+  { label: "Insurance Policy", tint: "bg-amber-400/10 border-amber-400/20", rotate: "rotate-3", offset: "translate-x-6 translate-y-2" },
+  { label: "12th Marksheet", tint: "bg-emerald-400/10 border-emerald-400/20", rotate: "-rotate-1", offset: "translate-x-2 -translate-y-4" },
+];
 
 const FEATURES = [
   {
-    icon: MailCheck,
-    title: "Email verification",
-    desc: "New accounts confirm ownership with a time-limited OTP sent straight to their inbox.",
+    icon: Search,
+    title: "Find it in one search",
+    body: "Type a document's name and it's on screen — no more scrolling through years of camera roll photos.",
   },
   {
-    icon: KeyRound,
-    title: "Short-lived access tokens",
-    desc: "15-minute JWT access tokens paired with a 7-day refresh token, rotated automatically.",
-  },
-  {
-    icon: Smartphone,
-    title: "Session tracking per device",
-    desc: "Every login is recorded with IP and device info, so you always know what's signed in.",
-  },
-  {
-    icon: LogOut,
-    title: "Remote logout, anywhere",
-    desc: "End one session or every session at once, without touching the device itself.",
+    icon: Users,
+    title: "One account, whole family",
+    body: "Add parents, siblings, or anyone you look after. Switch between their documents the way you'd switch a profile.",
   },
   {
     icon: ShieldCheck,
-    title: "Bcrypt-hashed passwords",
-    desc: "Passwords are salted and hashed before they ever touch the database.",
-  },
-  {
-    icon: Lock,
-    title: "HttpOnly refresh cookies",
-    desc: "Refresh tokens never reach client-side JavaScript, closing off a common attack path.",
+    title: "Passwords, kept honestly",
+    body: "Secure notes are encrypted before they're stored — hidden by default, visible only when you choose to reveal them.",
   },
 ];
 
-const STEPS = [
-  { n: "01", title: "Sign up", desc: "Create an account with an email and password." },
-  { n: "02", title: "Verify", desc: "Confirm your email with a 6-digit code we send you." },
-  { n: "03", title: "Log in", desc: "Get a short-lived access token and a secure session." },
-  { n: "04", title: "Stay in control", desc: "Review active sessions, sign out anywhere, anytime." },
-];      
+function Logo() {
+  return (
+    <Link to="/" className="flex items-center gap-2">
+      <div className="w-8 h-8 rounded-lg bg-amber-400/10 border border-amber-400/30 flex items-center justify-center">
+        <Lock className="w-4 h-4 text-blue-500" strokeWidth={2.5} />
+      </div>
+      <span className="font-semibold tracking-tight text-white">Dastavej</span>
+    </Link>
+  );
+}
 
-
+function DocumentStack() {
+  return (
+    <div className="relative h-72 w-full max-w-xs mx-auto lg:mx-0">
+      {DOC_STACK.map((doc, i) => (
+        <div
+          key={doc.label}
+          className={`absolute inset-x-6 top-6 h-48 rounded-2xl border ${doc.tint} ${doc.rotate} ${doc.offset}
+                      bg-[#131826] shadow-2xl shadow-black/50 p-5 flex flex-col justify-between`}
+          style={{ zIndex: i }}
+        >
+          <div className="space-y-2">
+            <div className="h-2 w-3/5 rounded-full bg-white/10" />
+            <div className="h-2 w-2/5 rounded-full bg-white/10" />
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-gray-400">{doc.label}</span>
+            <div className="w-6 h-6 rounded-md bg-white/5 border border-white/10" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 
 
 export default function Home() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [email, setEmail] = useState('');
 
+  const screen = searchParams.get("auth") || "home";
+
+  const setScreen = (value) => {
+    if (value === "home") {
+      setSearchParams({});
+    } else {
+      setSearchParams({ auth: value });
+    }
+  };
+
+  if (screen === "login") {
+    return (
+      <Login
+        onRegister={() => setScreen("register")}
+      />
+    );
+  }
+
+  if (screen === "register") {
+    return (
+      <Register
+        onLogin={() => setScreen("login")}
+        onVerify={(registeredEmail) => {
+          setEmail(registeredEmail);
+          setScreen("verify");
+        }}
+      />
+    );
+  }
+
+  if (screen === "verify") {
+    return (
+      <VerifyEmail
+      email = {email}
+        onDone={() => setScreen("login")}
+      />
+    );
+  }
   return (
-    <div className="min-h-screen w-full bg-white text-gray-900">
-      {/* Navbar */}
-      <header className="sticky top-0 z-20 bg-white/80 backdrop-blur border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center">
-              <Lock className="w-4 h-4 text-white" strokeWidth={2.5} />
-            </div>
-            <span className="font-semibold text-gray-900">DevVault</span>
-          </Link>
-
-          <nav className="hidden md:flex items-center gap-8 text-sm text-gray-600">
-            <a href="#features" className="hover:text-gray-900">Features</a>
-            <Link to="#how-it-works" className="hover:text-gray-900">How it works</Link>
-            <Link
-              to="https://github.com/chetanravish/Mern-Authentication-System"
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-gray-900 flex items-center gap-1"
-            >
-              <GitBranch className="w-4 h-4" /> Github
-            </Link>
-          </nav>
-
-          <div className="hidden md:flex items-center gap-3">
-            <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-2">
-              Log in
-            </Link>
-            <Link
-              to="/register"
-              className="text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-xl transition-colors"
-            >
-              Sign up
-            </Link>
-          </div>
+    <div className="min-h-screen w-full bg-[#0B0F19] text-gray-100">
+      {/* Nav */}
+      <header className="max-w-5xl mx-auto flex items-center justify-between px-6 py-6">
+        <Logo />
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setScreen("login")}
+            className="hidden sm:block text-sm text-gray-400 hover:text-gray-200"
+          >
+            Log in
+          </button>
 
           <button
-            className="md:hidden text-gray-600"
-            onClick={() => setMenuOpen((o) => !o)}
-            aria-label="Toggle menu"
+            onClick={() => setScreen("register")}
+            className="flex items-center gap-1.5 bg-blue-500 hover:bg-blue-700 text-[#0B0F19] text-sm font-medium px-4 py-2 rounded-xl"
           >
-            {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            Get started
           </button>
         </div>
-
-        {menuOpen && (
-          <div className="md:hidden border-t border-gray-100 px-6 py-4 space-y-3 text-sm">
-            <Link to="#features" className="block text-gray-600">Features</Link>
-            <Link to="#how-it-works" className="block text-gray-600">How it works</Link>
-            <Link to="https://github.com/chetanravish/Mern-Authentication-System" className="block text-gray-600">Github</Link>
-            <div className="flex gap-3 pt-2">
-              <Link to="/login" className="flex-1 text-center text-sm font-medium border border-gray-200 rounded-xl py-2">
-                Log in
-              </Link>
-              <Link to="/register" className="flex-1 text-center text-sm font-medium text-white bg-blue-500 rounded-xl py-2">
-                Sign up
-              </Link>
-            </div>
-          </div>
-        )}
       </header>
 
       {/* Hero */}
-      <section className="max-w-6xl mx-auto px-6 pt-20 pb-24 grid md:grid-cols-2 gap-12 items-center">
+      <section className="max-w-5xl mx-auto px-6 pt-12 pb-24 grid lg:grid-cols-2 gap-16 items-center">
         <div>
-          <span className="inline-block text-xs font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full mb-5">
-            Open-source auth for MERN apps
-          </span>
-          <h1 className="text-4xl md:text-5xl font-semibold tracking-tight leading-tight text-gray-900">
-            Authentication that knows who's actually logged in.
+          <h1 className="font-serif text-4xl sm:text-5xl leading-[1.1] text-white">
+            Every family document, exactly where you left it.
           </h1>
-          <p className="mt-5 text-gray-500 text-base leading-relaxed max-w-md">
-            DevVault handles sign-up, email verification, and token refresh —
-            and gives every user visibility into every device holding a
-            session on their account.
+          <p className="mt-5 text-gray-400 text-base leading-relaxed max-w-md">
+            Dastavej keeps IDs, policies, and certificates for you and the people you look after
+            in one place — so finding one takes a search, not a search party.
           </p>
-          <div className="mt-8 flex items-center gap-3">
-            <a
-              href="/register"
-              className="flex items-center gap-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 px-5 py-3 rounded-xl transition-colors"
+          <div className="mt-8 flex items-center gap-4">
+            <button
+              onClick={() => setScreen("register")}
+              className="flex items-center gap-2 bg-blue-500 hover:bg-blue-700 text-[#0B0F19] text-sm font-medium px-5 py-3 rounded-xl"
             >
-              Create an account <ArrowRight className="w-4 h-4" />
-            </a>
-            <a
-              href="/login"
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 px-5 py-3 rounded-xl border border-gray-200"
+              Create your vault <ArrowRight className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setScreen("login")}
+              className="text-sm text-gray-400 hover:text-gray-200"
             >
-              Log in
-            </a>
+              I already have an account
+            </button>
           </div>
         </div>
 
-        {/* Signature element: mock session list */}
-        <div className="bg-white border border-gray-100 shadow-xl shadow-blue-50 rounded-2xl p-5">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm font-medium text-gray-900">Active sessions</p>
-            <span className="text-xs text-blue-500 font-medium">3 devices</span>
-          </div>
-          <div className="space-y-3">
-            {[
-              { device: "MacBook Pro · Chrome", loc: "Mumbai, IN", active: true },
-              { device: "iPhone 14 · Safari", loc: "Mumbai, IN", active: true },
-              { device: "Windows PC · Edge", loc: "Delhi, IN", active: false },
-            ].map((s, i) => (
-              <div
-                key={i}
-                className="flex items-center justify-between rounded-xl border border-gray-100 px-4 py-3"
-              >
-                <div>
-                  <p className="text-sm text-gray-800">{s.device}</p>
-                  <p className="text-xs text-gray-400">{s.loc}</p>
-                </div>
-                <span
-                  className={`text-xs font-medium px-2 py-1 rounded-full ${
-                    s.active ? "bg-green-50 text-green-600" : "bg-gray-50 text-gray-400"
-                  }`}
-                >
-                  {s.active ? "Active" : "Signed out"}
-                </span>
-              </div>
-            ))}
-          </div>
-          <button className="w-full mt-4 text-xs font-medium text-red-500 border border-red-100 rounded-xl py-2 hover:bg-red-50">
-            Log out of all devices
-          </button>
+        <DocumentStack />
+      </section>
+
+      {/* The problem, in one line */}
+      <section className="border-y border-white/5 bg-[#0D1220]">
+        <div className="max-w-3xl mx-auto px-6 py-10 text-center">
+          <p className="text-gray-300 text-lg leading-relaxed">
+            You know the file exists. It's in Gallery, or Drive, or a folder called "Important" —
+            somewhere. Dastavej is the one place you check first, and the last place you'll need to.
+          </p>
         </div>
       </section>
 
       {/* Features */}
-      <section id="features" className= "bg-gray-50 py-24">
-        <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-            Built for the parts most tutorials skip
-          </h2>
-          <p className="text-gray-500 mb-12 max-w-lg">
-            Every piece here maps to something that actually goes wrong in
-            production auth systems.
-          </p>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {FEATURES.map(({ icon: Icon, title, desc }) => (
-              <div
-                key={title}
-                className="bg-white rounded-2xl p-6 border border-gray-100"
-              >
-                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center mb-4">
-                  <Icon className="w-5 h-5 text-blue-500" />
-                </div>
-                <h3 className="text-sm font-semibold text-gray-900 mb-1">{title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
+      <section className="max-w-3xl mx-auto px-6 py-24">
+        <div className="space-y-10">
+          {FEATURES.map(({ icon: Icon, title, body }, i) => (
+            <div
+              key={title}
+              className={`flex items-start gap-5 pb-10 ${i !== FEATURES.length - 1 ? "border-b border-white/5" : ""
+                }`}
+            >
+              <div className="shrink-0 w-11 h-11 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                <Icon className="w-5 h-5 text-blue-400" />
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="how-it-works" className="max-w-6xl mx-auto px-6 py-24">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-2">How it works</h2>
-        <p className="text-gray-500 mb-12 max-w-lg">
-          Four steps from a new visitor to a verified, trackable session.
-        </p>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {STEPS.map((s) => (
-            <div key={s.n}>
-              <p className="text-xs font-semibold text-blue-400 mb-2">{s.n}</p>
-              <h3 className="text-sm font-semibold text-gray-900 mb-1">{s.title}</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">{s.desc}</p>
+              <div>
+                <h3 className="text-white font-medium">{title}</h3>
+                <p className="mt-1.5 text-gray-400 text-sm leading-relaxed max-w-md">{body}</p>
+              </div>
             </div>
           ))}
         </div>
       </section>
 
-    <footer className="w-full border-t border-gray-200 bg-white py-6 dark:border-gray-800 dark:bg-slate-950">
-  <div className="mx-auto flex max-w-7xl flex-col items-center gap-2 px-4">
+      {/* Closing CTA */}
+      <section className="max-w-3xl mx-auto px-6 pb-24 text-center">
+        <h2 className="font-serif text-2xl sm:text-3xl text-white">
+          Set it up once. Find anything, always.
+        </h2>
+        <button
+          onClick={() => setScreen("register")}
+          className="mt-6 inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-700 text-[#0B0F19] text-sm font-medium px-5 py-3 rounded-xl"
+        >
+          Create your vault <ArrowRight className="w-4 h-4" />
+        </button>
+      </section>
 
-    {/* Logo */}
-    <div className="flex items-center gap-2">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="h-5 w-5 text-blue-600"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth={2}
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M12 3l7 4v5c0 5-3.5 8-7 9-3.5-1-7-4-7-9V7l7-4z"
-        />
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M9.5 12l1.5 1.5L14.5 10"
-        />
-      </svg>
-
-      <h3 className="text-lg font-semibold text-blue-600">DevVault</h3>
-    </div>
-
-    {/* Tagline */}
-    <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-      Secure authentication built with MERN • JWT • Cookies
-    </p>
-
-    {/* Copyright */}
-    <p className="text-xs text-gray-400 dark:text-gray-500">
-      © 2026 DevVault. Built by Chetan Ravish.
-    </p>
-  </div>
-</footer>
+      {/* Footer */}
+      <footer className="border-t border-white/5">
+        <div className="max-w-5xl mx-auto px-6 py-8 flex items-center justify-between">
+          <Logo />
+          <span className="text-xs text-gray-600">© {new Date().getFullYear()} Dastavej. All rights reserved.</span>
+        </div>
+      </footer>
     </div>
   );
 }
