@@ -16,7 +16,7 @@ export default function ForgotPassword({ onBack, onVerify }) {
     try {
       await forgotPassword(email);
 
-      // Save email for next screen
+      
       sessionStorage.setItem("resetEmail", email);
 
       onVerify(email);

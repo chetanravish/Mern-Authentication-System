@@ -5,6 +5,8 @@ import { useContext } from "react";
 import { AuthContext } from "../../context/auth_context.js";
 import { useNavigate } from "react-router-dom";
 import { Lock, Mail, User, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { setCurrentAccessToken } from "../../context/TokenStore";
+
 
 export default function Login({ onRegister, onForgotPassword }={}) {
   const navigate = useNavigate();
@@ -24,6 +26,7 @@ export default function Login({ onRegister, onForgotPassword }={}) {
 
     try {
       const data = await loginUser(form.email, form.password);
+       setCurrentAccessToken(data.accessToken);
       setAccessToken(data.accessToken);
       navigate("/dashboard", {
         state: {

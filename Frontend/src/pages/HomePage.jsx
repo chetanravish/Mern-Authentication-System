@@ -82,7 +82,7 @@ export default function Home() {
   const screen = searchParams.get("auth") || "home";
 
   const setScreen = (value) => {
-    console.log("Screen:", value);
+ 
     if (value === "home") {
       setSearchParams({});
     } else {

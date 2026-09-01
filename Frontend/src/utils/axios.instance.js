@@ -1,14 +1,14 @@
 import axios from "axios";
-import { getAccessToken } from "../context/TokenStore";
+import { getAccessToken, setCurrentAccessToken } from "../context/TokenStore";
+
 const axiosInstance = axios.create({
-    baseURL: import.meta.env.VITE_API_URL,
-    timeout: 10000,
-    withCredentials:true
-})
+  baseURL: import.meta.env.VITE_API_URL,
+  timeout: 10000,
+  withCredentials: true,
+});
 
-
-axiosInstance.interceptors.request.use(
-   (config) => {
+// Attach access token
+axiosInstance.interceptors.request.use((config) => {
   const token = getAccessToken();
 
   if (token) {
@@ -16,44 +16,44 @@ axiosInstance.interceptors.request.use(
   }
 
   return config;
-},
-    (error) => {
+});
 
-        if (error.response) {
-            const { status, data } = error.response;
+// Refresh token automatically
+axiosInstance.interceptors.response.use(
+  (response) => response,
 
-            switch (status) {
-                case 400:
-                    console.error("Bad Request:", data);
-                    break;
+  async (error) => {
+    console.log("401 intercepted");
+    const originalRequest = error.config;
 
-                case 401:
-                    console.error("Unauthorized:", data);
-                    break;
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
 
-                case 403:
-                    console.error("Forbidden:", data);
-                    break;
+      try {
+        const { data } = await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/auth/refresh-token`,
+          {},
+          { withCredentials: true }
+        );
 
-                case 404:
-                    console.error("Not Found:", data);
-                    break;
+        setCurrentAccessToken(data.accessToken);
 
-                case 500:
-                    console.error("Internal Server Error:", data);
-                    break;
+        originalRequest.headers.Authorization =
+          `Bearer ${data.accessToken}`;
 
-                default:
-                    console.error(`Error (${status}):`, data);
-            }
-        } else if (error.request) {
-            console.error("No response received:", error.request);
-        } else {
-            console.error("Error:", error.message);
-        }
-
-        return Promise.reject(error);
+        return axiosInstance(originalRequest);
+      } catch (err) {
+        setCurrentAccessToken(null);
+        window.location.href = "/?auth=login";
+        return Promise.reject(err);
+      }
     }
+
+    return Promise.reject(error);
+  }
 );
 
 export default axiosInstance;
