@@ -7,4 +7,5 @@ const famRouter = Router();
 famRouter.post("/",verifyJWT,famcontroller.addFamilyMember)
 famRouter.get("/",verifyJWT,famcontroller.getFamilyMembers)
 famRouter.delete("/:id",verifyJWT,famcontroller.deleteFamilyMember)
+famRouter.put("/update/:id",verifyJWT,famcontroller.updateFamilyMember)
 export default famRouter;

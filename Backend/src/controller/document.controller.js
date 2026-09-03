@@ -1,8 +1,10 @@
 import documentModel from "../models/document.model.js";
+import familyModel from "../models/family.model.js";
 
 export const getMyDocuments = async (req, res) => {
   const documents = await documentModel
     .find({ owner: req.user._id })
+    .populate("member", "name relation")
     .sort({ createdAt: -1 });
 
   res.status(200).json({
@@ -10,27 +12,44 @@ export const getMyDocuments = async (req, res) => {
   });
 };
 
-export const uploadDocument = async (req,res)=>{
-     const { name, category } = req.body;
-     if (!req.file) {
+export const uploadDocument = async (req, res) => {
+  const { name, category, memberId } = req.body;
+  if (!req.file) {
     return res.status(400).json({
       message: "Please upload a file",
     });
   }
-   const document = await documentModel.create({
+
+  
+  const member = await familyModel.findOne({
+    _id: memberId,
     owner: req.user._id,
+  });
+
+  if (!member) {
+    return res.status(404).json({
+      message: "Family member not found",
+    });
+  }
+  const document = await documentModel.create({
+    owner: req.user._id,
+    member:memberId,
     name,
     category,
     fileName: req.file.originalname,
     mimeType: req.file.mimetype,
     size: req.file.size,
-    fileData: req.file.buffer, 
+    fileData: req.file.buffer,
   });
+  const populated = await document.populate(
+  "member",
+  "name relation"
+);
   res.status(201).json({
     message: "Document uploaded successfully",
-    document,
+    document:populated,
   });
-}
+};
 
 export const viewDocument = async (req, res) => {
   const document = await documentModel.findOne({
@@ -45,10 +64,7 @@ export const viewDocument = async (req, res) => {
   }
 
   res.set("Content-Type", document.mimeType);
-  res.set(
-    "Content-Disposition",
-    `inline; filename="${document.fileName}"`
-  );
+  res.set("Content-Disposition", `inline; filename="${document.fileName}"`);
 
   res.send(document.fileData);
 };
@@ -79,7 +95,7 @@ export const updateDocument = async (req, res) => {
       owner: req.user._id,
     },
     { name, category },
-    { new: true }
+    { new: true },
   );
 
   if (!document) {

@@ -20,6 +20,15 @@ export default function DocumentCard({ document, onView }) {
       <h3 className="mt-4 text-white font-medium truncate">
         {document.name}
       </h3>
+      {document.member ? (
+        <div className="inline-flex items-center gap-2 mt-3 px-3 py-1 rounded-full bg-blue-500/10 text-blue-300 text-xs font-medium">
+          👤 {document.member.name} ({document.member.relation})
+        </div>
+      ) : (
+        <div className="inline-flex items-center gap-2 mt-3 px-3 py-1 rounded-full bg-gray-500/10 text-gray-400 text-xs font-medium">
+          👤 Unassigned
+        </div>
+      )}
 
       <div className="mt-2 text-sm text-gray-400 space-y-1">
         <p>{document.size}</p>

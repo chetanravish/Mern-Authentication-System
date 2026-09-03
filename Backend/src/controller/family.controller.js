@@ -46,7 +46,7 @@ export const addFamilyMember = async(req,res)=>{
 export const getFamilyMembers = async (req, res) => {
   const members = await familyModel
     .find({ owner: req.user._id })
-    .sort({ createdAt: 1 });
+    .sort({isOwner:-1, createdAt: 1 });
 
   if (members.length === 0) {
     return res.status(200).json({
@@ -71,8 +71,42 @@ export const deleteFamilyMember = async(req,res)=>{
             message:"Family member not found"
         })
     }
-
+        if (member.isOwner) {
+    return res.status(403).json({
+      message: "You cannot delete your own profile",
+    });
+  }
+          await member.deleteOne();
     return res.status(200).json({
         message:"Member deleted successfully"
     })
 }
+
+export const updateFamilyMember = async (req, res) => {
+  const member = await familyModel.findOne({
+    _id: req.params.id,
+    owner: req.user._id,
+  });
+
+  if (!member) {
+    return res.status(404).json({
+      message: "Family member not found",
+    });
+  }
+
+  if (member.isOwner) {
+    return res.status(403).json({
+      message: "Your profile cannot be edited",
+    });
+  }
+
+  member.name = req.body.name;
+  member.relation = req.body.relation;
+
+  await member.save();
+
+  return res.json({
+    message: "Updated successfully",
+    member,
+  });
+};

@@ -11,10 +11,11 @@ const categories = [
     "Other",
 ];
 
-export default function UploadDocumentModal({ isOpen, onClose,onSuccess }) {
+export default function UploadDocumentModal({ isOpen, onClose, onSuccess, members = [] }) {
     const [file, setFile] = useState(null);
     const [name, setName] = useState("");
     const [category, setCategory] = useState("Identity");
+    const [memberId, setMemberId] = useState("");
 
     if (!isOpen) return null;
 
@@ -33,14 +34,21 @@ export default function UploadDocumentModal({ isOpen, onClose,onSuccess }) {
         setFile(null);
         setName("");
         setCategory("Identity");
+        setMemberId("");
         onClose();
     };
     const handleUpload = async () => {
+
+        if (!memberId) {
+            return alert("Please select a family member");
+        }
         const formData = new FormData();
 
         formData.append("file", file);
         formData.append("name", name);
         formData.append("category", category);
+        formData.append("memberId", memberId);
+
 
         try {
             const data = await uploadDocument(formData);
@@ -139,6 +147,22 @@ export default function UploadDocumentModal({ isOpen, onClose,onSuccess }) {
                             ))}
                         </select>
                     </div>
+
+                    <select
+                        value={memberId}
+                        onChange={(e) => setMemberId(e.target.value)}
+                        className="w-full bg-[#0B0F19] border border-white/10 rounded-xl px-4 py-3 text-white"
+                        required
+                    >
+                        <option value="">Select Family Member</option>
+
+                        {members.map((member) => (
+                            <option key={member._id} value={member._id}>
+                                {member.name} ({member.relation})
+                            </option>
+                        ))}
+                    </select>
+
                 </div>
 
                 {/* Footer */}
@@ -152,7 +176,7 @@ export default function UploadDocumentModal({ isOpen, onClose,onSuccess }) {
 
                     <button
                         onClick={handleUpload}
-                        disabled={!file || !name}
+                        disabled={!file || !name || !memberId}
                         className="px-5 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-black font-medium flex items-center gap-2"
                     >
                         <Upload className="w-4 h-4" />

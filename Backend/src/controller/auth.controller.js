@@ -3,6 +3,7 @@ import config from "../config/config.js";
 import sessionModel from "../models/session.model.js";
 import { sendEmail } from "../services/email.service.js";
 import { generateOtp, getOtpHtml } from "../utils/utils.js";
+import familyModel from "../models/family.model.js";
 import otpModel from "../models/otp.model.js";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
@@ -26,6 +27,13 @@ export async function register(req, res) {
     username,
     email,
     password: hashedPassword,
+  });
+
+  await familyModel.create({
+    owner: user._id,
+    name: user.username,
+    relation: "Self",
+    isOwner: true,
   });
 
   const otp = generateOtp();
@@ -171,6 +179,13 @@ export async function refreshToken(req, res) {
     });
   }
 
+  const user = await userModel.findById(decoded.id);
+
+  if (!user) {
+    return res.status(404).json({
+      message: "User not found",
+    });
+  }
   const accessToken = jwt.sign(
     {
       id: decoded.id,
@@ -208,6 +223,11 @@ export async function refreshToken(req, res) {
   res.status(200).json({
     message: "access token refreshed",
     accessToken,
+    user: {
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+    },
   });
 }
 
@@ -436,8 +456,8 @@ export async function verifyResetOtp(req, res) {
 }
 
 export async function resetPassword(req, res) {
-  const {newPassword } = req.body;
-   const token = req.headers.authorization?.split(" ")[1];
+  const { newPassword } = req.body;
+  const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) {
     return res.status(401).json({ message: "Reset token missing" });

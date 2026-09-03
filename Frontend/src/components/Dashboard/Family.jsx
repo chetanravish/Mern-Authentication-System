@@ -4,9 +4,8 @@ import DeleteConfirmModel from "./DeleteConfirmModel";
 import { useState } from "react";
 
 
-export default function Family({ members, onAddClick, onDelete }) {
-
-    const [selectedMember, setSelectedMember] = useState(null);
+export default function Family({ members, selectedMember, onSelect, onAddClick, onDelete }) {
+    const [deleteMember, setDeleteMember] = useState(null);
 
     return (
         <div className="space-y-6">
@@ -40,15 +39,28 @@ export default function Family({ members, onAddClick, onDelete }) {
                     {members.map((member) => (
                         <div
                             key={member._id}
-                            className="relative bg-[#131826] border border-white/10 rounded-2xl p-5 hover:border-blue-500/30 transition"
+                            onClick={() =>
+                                onSelect(
+                                    selectedMember?._id === member._id ? null : member
+                                )
+                            }
+                            className={`relative cursor-pointer rounded-2xl p-5 border transition ${selectedMember?._id === member._id
+                                ? "border-blue-500 bg-blue-500/10"
+                                : "border-white/10 bg-[#131826] hover:border-blue-500/30"
+                                }`}
                         >
                             {/* Delete Button */}
-                            <button
-                                onClick={() => setSelectedMember(member)}
-                                className="absolute top-4 right-4 p-2 rounded-lg hover:bg-red-500/10 text-gray-400 hover:text-red-400"
-                            >
-                                <Trash2 className="w-4 h-4" />
-                            </button>
+                            {!member.isOwner && (
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setDeleteMember(member);
+                                    }}
+                                    className="absolute top-4 right-4 p-2 rounded-lg hover:bg-red-500/10 text-gray-400 hover:text-red-400"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+                            )}
 
                             {/* Avatar */}
                             <div className="w-14 h-14 rounded-full bg-blue-500/20 flex items-center justify-center text-xl font-bold text-blue-400">
@@ -66,13 +78,13 @@ export default function Family({ members, onAddClick, onDelete }) {
                 </div>
             )}
             <DeleteConfirmModel
-                isOpen={!!selectedMember}
-                name={selectedMember?.name}
-                onCancel={() => setSelectedMember(null)}
+                isOpen={!!deleteMember}
+                name={deleteMember?.name}
+                onCancel={() => setDeleteMember(null)}
                 onConfirm={async () => {
-                    await deleteFamilyMember(selectedMember._id);
-                    onDelete(selectedMember._id);
-                    setSelectedMember(null);
+                    await deleteFamilyMember(deleteMember._id);
+                    onDelete(deleteMember._id);
+                    setDeleteMember(null);
                 }}
             />
         </div>

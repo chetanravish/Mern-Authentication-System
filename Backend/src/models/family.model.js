@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 
 const familySchema  = new mongoose.Schema({
+    isOwner: {
+  type: Boolean,
+  default: false,
+},
     owner:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"users",

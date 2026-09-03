@@ -42,7 +42,7 @@ export default function Sidebar({
       <div className="px-6 py-5 border-b border-white/5">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg">
-            {user?.username?.charAt(0).toUpperCase() || "U"}
+            {user?.name?.charAt(0).toUpperCase() || "U"}
           </div>
 
           <div>

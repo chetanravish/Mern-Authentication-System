@@ -1,34 +1,38 @@
-import { ShieldCheck, Upload } from "lucide-react";
+import { Shield } from "lucide-react";
 
-export default function WelcomeCard({ user, onUpload }) {
+export default function WelcomeCard({ user }) {
   return (
-    <div className="w-full rounded-3xl bg-linear-to-r from-blue-600 to-indigo-700 p-8 text-white shadow-xl">
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-blue-100 text-sm mb-2">
-            Welcome back 👋
+    <div className="relative overflow-hidden rounded-3xl bg-linear-to-r from-blue-600 via-blue-700 to-indigo-700 p-8">
+      {/* Background wave */}
+      <div className="absolute -top-24 right-10 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl" />
+      <div className="absolute bottom-0 left-1/3 h-40 w-96 rounded-full bg-indigo-500/20 blur-3xl" />
+
+      <div className="relative flex items-center justify-between">
+        {/* Left */}
+        <div className="max-w-xl">
+          <p className="text-blue-100 text-lg mb-2">
+            Welcome back, {user?.username || "User"} 👋
           </p>
 
-          <h1 className="text-3xl font-bold">
-            Hello, {user?.username || "User"}
+          <h1 className="text-5xl font-bold text-white mb-4">
+            Your secure family vault
           </h1>
 
-          <p className="mt-3 max-w-lg text-blue-100 leading-relaxed">
-            Your important documents are securely stored and available from
-            any device. Search, upload and manage everything in one place.
+          <p className="text-blue-100 text-base leading-7">
+            Store, organize and access important family documents securely
+            from anywhere. Everything in one protected place.
           </p>
-
-          <button
-            onClick={onUpload}
-            className="mt-6 flex items-center gap-2 bg-white text-blue-700 font-semibold px-5 py-3 rounded-xl hover:bg-blue-50"
-          >
-            <Upload className="w-5 h-5" />
-            Upload Document
-          </button>
         </div>
 
-        <div className="hidden md:flex w-20 h-20 rounded-2xl bg-white/10 items-center justify-center backdrop-blur-sm">
-          <ShieldCheck className="w-10 h-10 text-white" />
+        {/* Right Illustration */}
+        <div className="hidden lg:flex items-center justify-center">
+          <div className="relative">
+            <div className="absolute inset-0 rounded-full bg-white/10 blur-2xl" />
+
+            <div className="relative w-36 h-36 rounded-3xl bg-white/10 backdrop-blur flex items-center justify-center">
+              <Shield className="w-16 h-16 text-white" strokeWidth={1.5} />
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -22,6 +22,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const data = await refreshAccessToken();
         setAccessToken(data.accessToken);
+        setUser(data.user);
       } catch {
         setAccessToken(null);
       } finally {

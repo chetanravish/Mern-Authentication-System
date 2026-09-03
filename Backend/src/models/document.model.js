@@ -27,8 +27,13 @@ const documentSchema = new mongoose.Schema(
       ref: "user",
       required: true,
     },
+    member: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "FamilyMember",
+      required: true,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("document", documentSchema);
