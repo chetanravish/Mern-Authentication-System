@@ -69,3 +69,27 @@ export const deleteDocument = async (req, res) => {
     message: "Document deleted successfully",
   });
 };
+
+export const updateDocument = async (req, res) => {
+  const { name, category } = req.body;
+
+  const document = await documentModel.findOneAndUpdate(
+    {
+      _id: req.params.id,
+      owner: req.user._id,
+    },
+    { name, category },
+    { new: true }
+  );
+
+  if (!document) {
+    return res.status(404).json({
+      message: "Document not found",
+    });
+  }
+
+  res.status(200).json({
+    message: "Document updated successfully",
+    document,
+  });
+};

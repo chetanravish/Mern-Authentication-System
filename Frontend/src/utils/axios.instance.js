@@ -23,12 +23,12 @@ axiosInstance.interceptors.response.use(
   (response) => response,
 
   async (error) => {
-    console.log("401 intercepted");
     const originalRequest = error.config;
 
     if (
       error.response?.status === 401 &&
-      !originalRequest._retry
+      !originalRequest._retry &&
+      !originalRequest.url.includes("/api/auth/refresh-token")
     ) {
       originalRequest._retry = true;
 

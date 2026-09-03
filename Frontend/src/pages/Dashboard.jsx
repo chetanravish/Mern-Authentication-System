@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/auth_context";
-import { logOut, getDocument } from "../api/devvault.api";
+import { logOut, getDocument, getFamilyMembers } from "../api/devvault.api";
 
 import Sidebar from "../components/Dashboard/Sidebar.jsx";
 import Topbar from "../components/Dashboard/Topbar.jsx";
@@ -11,6 +11,8 @@ import RecentDocuments from "../components/Dashboard/RecentDocument.jsx";
 import DocumentModel from "../components/Dashboard/DocumentModel.jsx";
 import UploadDocModel from "../components/Dashboard/UploadDocModel.jsx";
 import DocumentViewer from "../components/Dashboard/DocumentViewer";
+import Family from "../components/Dashboard/Family.jsx"
+import AddMemberModel from "../components/Dashboard/AddMember.jsx";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -21,6 +23,19 @@ export default function Dashboard() {
   const [selectedDocument, setSelectedDocument] = useState(null);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [documents, setDocuments] = useState([]);
+  const [members, setMembers] = useState([]);
+  const [isAddOpen, setIsAddOpen] = useState(false);
+
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      const data = await getFamilyMembers();
+      console.log(data)
+      setMembers(data.members);
+    };
+
+    fetchMembers();
+  }, []);
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -105,10 +120,6 @@ export default function Dashboard() {
           </div>
         )}
 
-        {activeTab === "family" && (
-          <h1 className="text-3xl font-bold">Family</h1>
-        )}
-
         {activeTab === "notes" && (
           <h1 className="text-3xl font-bold">Secure Notes</h1>
         )}
@@ -120,6 +131,30 @@ export default function Dashboard() {
         {activeTab === "settings" && (
           <h1 className="text-3xl font-bold">Working On It </h1>
         )}
+
+        {activeTab === "family" && (
+          <>
+            <Family
+              members={members}
+              onAddClick={() => setIsAddOpen(true)}
+              onDelete={(id) => {
+                setMembers((prev) =>
+                  prev.filter((m) => m._id !== id)
+                );
+              }}
+            />
+
+            <AddMemberModel
+              isOpen={isAddOpen}
+              onClose={() => setIsAddOpen(false)}
+              memberCount={members.length}
+              onSuccess={(newMember) => {
+                setMembers((prev) => [...prev, newMember]);
+              }}
+            />
+          </>
+        )}
+
       </main>
     </div>
   );

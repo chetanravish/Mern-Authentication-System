@@ -105,3 +105,20 @@ export const updateDocument = async (id, payload) => {
   const { data } = await axiosInstance.put(`/api/documents/${id}`, payload);
   return data;
 };
+
+export const getFamilyMembers = async ()=>{
+  const {data} =await axiosInstance.get("/api/family")
+  return data;
+}
+
+export const addFamilyMember = async(name,relation)=>{
+  const {data} = await axiosInstance.post("/api/family",{
+    name,relation
+  })
+  return data;
+}
+
+export const deleteFamilyMember = async(id)=>{
+  const {data} = await axiosInstance.delete(`/api/family/${id}`)
+  return data
+}

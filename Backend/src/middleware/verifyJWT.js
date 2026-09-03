@@ -3,13 +3,10 @@ import userModel from "../models/user.model.js";
 import config from "../config/config.js";
 
 export const verifyJWT = async (req, res, next) => {
-  console.log("Cookies", req.cookies);
-  console.log("Auth Header:", req.headers.authorization);
   try {
     const token =
       req.cookies?.accessToken ||
       req.header("Authorization")?.replace("Bearer ", "");
-    console.log("Token", token);
 
     if (!token) {
       return res.status(401).json({
@@ -18,11 +15,9 @@ export const verifyJWT = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, config.JWT_SECRET);
-    console.log("Decoded:", decoded);
 
 
     const user = await userModel.findById(decoded.id).select("-password");
-    console.log("User:", user);
 
     if (!user) {
       return res.status(401).json({
