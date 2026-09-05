@@ -20,7 +20,15 @@ if(!process.env.GOOGLE_REFRESH_TOKEN){
 if(!process.env.GOOGLE_USER){
     throw new Error("GOOGLE_USER is not defined")
 }
-
+if(!process.env.AWS_ACCESS_KEY_ID){
+    throw new Error("AWS_ACCESS_KEY_ID is not defined")
+}
+if(!process.env.AWS_SECRET_ACCESS_KEY){
+    throw new Error ("AWS_SECRET_ACCESS_KEY is not defined")
+}
+if(!process.env.AWS_REGION){
+    throw new Error("AWS_REGION is not defined")
+}
 const config ={
     MONGO_URI:process.env.MONGO_URI,
     JWT_SECRET:process.env.JWT_SECRET,
@@ -28,6 +36,11 @@ const config ={
     GOOGLE_CLIENT_SECRET:process.env.GOOGLE_CLIENT_SECRET,
     GOOGLE_REFRESH_TOKEN:process.env.GOOGLE_REFRESH_TOKEN,
     GOOGLE_USER:process.env.GOOGLE_USER,
+    AWS_REGION:process.env.AWS_REGION,
+    AWS_ACCESS_KEY_ID:process.env.AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY:process.env.AWS_SECRET_ACCESS_KEY,
+    AWS_BUCKET_NAME:process.env.AWS_BUCKET_NAME
+
 
 }
 export default config;

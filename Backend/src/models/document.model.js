@@ -32,6 +32,10 @@ const documentSchema = new mongoose.Schema(
       ref: "FamilyMember",
       required: true,
     },
+      s3Key: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true },
 );

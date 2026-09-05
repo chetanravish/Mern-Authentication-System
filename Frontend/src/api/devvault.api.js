@@ -89,11 +89,8 @@ export const uploadDocument = async (formData) => {
 };
 
 export const viewDocument = async (id) => {
-  const { data } = await axiosInstance.get(`/api/documents/${id}/view`, {
-    responseType: "blob",
-  });
-
-  return URL.createObjectURL(data);
+  const { data } = await axiosInstance.get(`/api/documents/${id}/view`);
+  return data.url;
 };
 
 export const deleteDocument = async (id) => {
@@ -121,4 +118,9 @@ export const addFamilyMember = async(name,relation)=>{
 export const deleteFamilyMember = async(id)=>{
   const {data} = await axiosInstance.delete(`/api/family/${id}`)
   return data
+}
+
+export const downloadDocument = async(id)=>{
+  const { data } = await axiosInstance.get(`/api/documents/${id}/download`);
+  return data.url;
 }

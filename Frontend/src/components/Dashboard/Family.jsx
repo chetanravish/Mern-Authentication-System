@@ -49,7 +49,6 @@ export default function Family({ members, selectedMember, onSelect, onAddClick, 
                                 : "border-white/10 bg-[#131826] hover:border-blue-500/30"
                                 }`}
                         >
-                            {/* Delete Button */}
                             {!member.isOwner && (
                                 <button
                                     onClick={(e) => {
@@ -62,7 +61,6 @@ export default function Family({ members, selectedMember, onSelect, onAddClick, 
                                 </button>
                             )}
 
-                            {/* Avatar */}
                             <div className="w-14 h-14 rounded-full bg-blue-500/20 flex items-center justify-center text-xl font-bold text-blue-400">
                                 {member.name.charAt(0).toUpperCase()}
                             </div>

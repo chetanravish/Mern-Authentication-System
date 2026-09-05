@@ -13,4 +13,5 @@ documentRouter.post("/upload",verifyJWT,
 documentRouter.get("/:id/view",verifyJWT,docController.viewDocument)
 documentRouter.delete("/:id",verifyJWT,docController.deleteDocument)
 documentRouter.put("/:id",verifyJWT,docController.updateDocument)
+documentRouter.get("/:id/download",verifyJWT,docController.downloadDocument)
 export default documentRouter;

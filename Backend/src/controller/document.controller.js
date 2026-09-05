@@ -1,5 +1,10 @@
 import documentModel from "../models/document.model.js";
 import familyModel from "../models/family.model.js";
+import { PutObjectCommand, GetObjectCommand ,DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { randomUUID } from "crypto";
+import { s3 } from "../config/AwsS3.js";
+import config from "../config/config.js";
 
 export const getMyDocuments = async (req, res) => {
   const documents = await documentModel
@@ -20,7 +25,6 @@ export const uploadDocument = async (req, res) => {
     });
   }
 
-  
   const member = await familyModel.findOne({
     _id: memberId,
     owner: req.user._id,
@@ -31,23 +35,32 @@ export const uploadDocument = async (req, res) => {
       message: "Family member not found",
     });
   }
+  const safeName = req.file.originalname.replace(/\s+/g, "-");
+
+  const s3Key = `documents/${req.user._id}/${randomUUID()}-${safeName}`;
+  await s3.send(
+    new PutObjectCommand({
+      Bucket: config.AWS_BUCKET_NAME,
+      Key: s3Key,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype,
+    }),
+  );
+
   const document = await documentModel.create({
     owner: req.user._id,
-    member:memberId,
+    member: memberId,
     name,
     category,
     fileName: req.file.originalname,
     mimeType: req.file.mimetype,
     size: req.file.size,
-    fileData: req.file.buffer,
+    s3Key,
   });
-  const populated = await document.populate(
-  "member",
-  "name relation"
-);
-  res.status(201).json({
+  const populated = await document.populate("member", "name relation isOwner");
+  return res.status(201).json({
     message: "Document uploaded successfully",
-    document:populated,
+    document: populated,
   });
 };
 
@@ -63,14 +76,22 @@ export const viewDocument = async (req, res) => {
     });
   }
 
-  res.set("Content-Type", document.mimeType);
-  res.set("Content-Disposition", `inline; filename="${document.fileName}"`);
+  const command = new GetObjectCommand({
+    Bucket: config.AWS_BUCKET_NAME,
+    Key: document.s3Key,
+  });
 
-  res.send(document.fileData);
+  const signedUrl = await getSignedUrl(s3, command, {
+    expiresIn: 60, 
+  });
+
+  return res.status(200).json({
+    url: signedUrl,
+  });
 };
 
 export const deleteDocument = async (req, res) => {
-  const document = await documentModel.findOneAndDelete({
+  const document = await documentModel.findOne({
     _id: req.params.id,
     owner: req.user._id,
   });
@@ -81,13 +102,23 @@ export const deleteDocument = async (req, res) => {
     });
   }
 
+    await s3.send(
+    new DeleteObjectCommand({
+      Bucket: config.AWS_BUCKET_NAME,
+      Key: document.s3Key,
+    })
+  );
+
+    await document.deleteOne();
+
+
   res.status(200).json({
     message: "Document deleted successfully",
   });
 };
 
 export const updateDocument = async (req, res) => {
-  const { name, category } = req.body;
+  const { name, category } = req.body ;
 
   const document = await documentModel.findOneAndUpdate(
     {
@@ -109,3 +140,29 @@ export const updateDocument = async (req, res) => {
     document,
   });
 };
+
+export const downloadDocument = async(req,res)=>{
+  const document = await documentModel.findOne({
+    _id:req.params.id,
+    owner:req.user._id
+  })
+
+  if(!document){
+    return res.status(404).json({
+      message:"Document not found !"
+    })  }
+
+    const command = new GetObjectCommand({
+      Bucket:config.AWS_BUCKET_NAME,
+      Key:document.s3Key,
+      ResponseContentDisposition:`attachment; filename="${document.fileName}"`,
+    })
+
+    const signedUrl = await getSignedUrl(s3,command,{
+      expiresIn:60,
+    })
+
+    return res.status(200).json({
+      url:signedUrl,
+    })
+}
