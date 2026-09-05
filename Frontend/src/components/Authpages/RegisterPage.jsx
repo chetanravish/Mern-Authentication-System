@@ -47,7 +47,7 @@ export default function Register({ onLogin, onVerify }) {
             Create your vault
           </h1>
           <p className="text-center text-sm text-gray-400 mt-1">
-            Save snippets and links behind your own login
+            Dastavej — Secure Family Document Vault
           </p>
 
           {error && (
